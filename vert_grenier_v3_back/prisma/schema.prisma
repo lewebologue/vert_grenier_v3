@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_LOCAL_URL")
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String?
+  password  String
+  role      Roles    @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id            String   @id @default(uuid()) @db.Uuid
+  civ           String
+  Lastname      String
+  Firstname     String
+  email         String @unique
+  password      String
+  phone         String
+  address       String
+  zipcode       String
+  city          String
+  orders        Order[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id          String   @id @default(uuid()) @db.Uuid
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ITEM {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  price       Float
+  imageUrl    String
+  category    Category @default(AUTRES)
+  order       Order? @relation(fields: [orderId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Category {
+  MOBILIER
+  DECORATION
+  RENOVATION
+  AUTRES
+}
+
+enum Roles {
+  ADMIN
+  USER
+  TECHNICAL
+}
