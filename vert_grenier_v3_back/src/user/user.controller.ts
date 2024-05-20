@@ -8,14 +8,25 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+@ApiBearerAuth()
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create user' })
+  @ApiResponse({ status: 200, description: 'Created.', type: CreateUserDto })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
